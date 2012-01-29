@@ -58,14 +58,14 @@ class Spider(object):
     keeps the crawl queue and do not crawl list updated as it loads and parses urls
     @TODO: describe a Spider better in this docstring ... damn
 
-    with the current setup the spider cannot get out of the START_DOMAIN because there
-    is no method for handling domains
+    a eulabot spider is restricted to a single domain. We will create a spider for each domain
+    
+    this allows us to control the frequency by which we access a domain from within the spider object
 
-    also with the current setup only relative links on the target page will work because we 
-    assume the domain.
+    this does mean we will need a good way for spiders to exchange urls when they find urls for a domain 
+    they are not allowed to access 
 
-    @TODO handle domains intelegently. put a plan together to ensure that a spider will not 
-    hit a domain to frequently. 
+    a DB or dict external to the spider class seems appropriate
     """
     
     def __init__(self, \
