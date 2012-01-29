@@ -4,10 +4,16 @@ import re
 DEFAULT_CRAWL_MAX = 10
 
 def default_payload(page_str):
-    pass
+    if page_str:
+        print "default payload ran for:", page_str[:50], '...'
+    else:
+        print "there was no page string"
 
 def default_url_handler(urls, do_not_crawl_list, crawl_queue):
-    pass
+    for url in urls:
+        if url not in do_not_crawl_list:
+            crawl_queue.enqueue(url)
+            
 
 def get_page_str(url, domain):
     """ returns a string containing the resource at url on domain """
@@ -18,8 +24,11 @@ def get_page_str(url, domain):
 def all_links(page_str):
     """ returns a list of the links found in the given page string """
     
-    matches = re.findall(' href=[\'"]([^\'"]+)[\'"]', page_str)
-    return matches
+    try: 
+        matches = re.findall(' href=[\'"]([^\'"]+)[\'"]', page_str)
+        return matches
+    except:
+        return None
 
 class CrawlSet(object):
     """ a set of urls """
@@ -91,19 +100,29 @@ class Spider(object):
         if self.crawl_counter < 1:
             return False
 
-        this_url = self.crawl_queue.dequeue()
-        if this_url not in self.do_not_crawl_list:
-            self.do_not_crawl_list.add(this_url)
-            self.crawl_counter -= 1
-            
-            return get_page_str(this_url, self.domain)
+        if len(self.crawl_queue) > 0:
+            this_url = self.crawl_queue.dequeue()
         
+            if this_url not in self.do_not_crawl_list:
+                self.do_not_crawl_list.add(this_url)
+                self.crawl_counter -= 1
+            
+                page_str = get_page_str(this_url, self.domain)
+                return page_str
+            else: #url is in do_not_crawl
+                return False
+        else: 
+            self.crawl_counter = 0
+            
     def handle_urls(self, urls):
         """
         runs the url handler with the correct arguements
         """
         
-        return self.url_handler(urls, self.do_not_crawl_list, self.crawl_queue)
+        if urls:
+            return self.url_handler(urls, self.do_not_crawl_list, self.crawl_queue)
+        else:
+            return None
 
     def run_payload(self, page_str):
         """
