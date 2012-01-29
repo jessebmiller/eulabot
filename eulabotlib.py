@@ -6,7 +6,7 @@ DEFAULT_CRAWL_MAX = 10
 def default_payload(page_str):
     pass
 
-def default_url_handler(urls):
+def default_url_handler(urls, do_not_crawl_list, crawl_queue):
     pass
 
 def get_page_str(url, domain):
