@@ -23,18 +23,53 @@ def test_url_handler(urls, do_not_crawl_list, crawl_queue):
         if url not in do_not_crawl_list:
             crawl_queue.enqueue(url)
     
+def test_crawl_payload(page_str):
+    """ 
+    hashes a concatination of the page string and the cumulative hash to verify that the 
+    expected crawl occured
+    """
+
+    return hashlib.sha1(page_str).hexdigest()
 
 class TestEulabot(unittest.TestCase):
     
     def setUp(self):
-        self.test_domain = 'karissa:8000'
+        self.test_domain = 'localhost:8000'
+        self.crawl_counter = 10
         self.crawl_queue = CrawlQueue(['third', 'second', 'first'])
         self.do_not_crawl = DoNotCrawlList()
         self.spider = Spider(self.test_domain, \
                                  ['3', '2', 'test/get_page/'], \
                                  ['NOa', 'NOb', 'NOc'], \
                                  test_url_handler, \
-                                 test_payload )
+                                 test_payload , \
+                                 self.crawl_counter )
+
+
+    def test_crawl(self):
+        """
+        makes sure that the crawl loop runs in order and does not break crawl rules
+        """
+        
+        crawl_test_spider = Spider(self.test_domain+'/test/crawl_test', \
+                                       ['1'], \
+                                       [], \
+                                       test_url_handler, \
+                                       test_crawl_payload, \
+                                       self.crawl_counter )
+
+        crawl_test_spider2 = Spider(self.test_domain+'/test/crawl_test', \
+                                       ['1'], \
+                                       [], \
+                                       test_url_handler, \
+                                       test_crawl_payload, \
+                                       self.crawl_counter )
+
+        first_crawl_results = crawl_test_spider.crawl()
+        second_crawl_results = crawl_test_spider2.crawl()
+        
+        self.assertEqual(len(first_crawl_results), self.crawl_counter)
+        self.assertEqual(first_crawl_results, second_crawl_results)
 
     def test_spider_get_next_page_str(self):
         """
@@ -56,7 +91,7 @@ class TestEulabot(unittest.TestCase):
         self.assertTrue('test_no_crawl_url' in self.spider.do_not_crawl_list)
         self.assertTrue(len(self.spider.crawl_queue) > 2)
 
-        self.assertEqual(self.spider.run_payload(random_page_str), 'ran_test_payload')
+        self.assertEqual(self.spider.run_payload({'page_str': random_page_str}), 'ran_test_payload')
 
     def test_spider_obeys_crawl_counter(self):
         counter_test_spider = Spider(self.test_domain, \

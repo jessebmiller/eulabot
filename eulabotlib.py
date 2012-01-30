@@ -83,7 +83,8 @@ class Spider(object):
                      initial_no_crawl_urls, \
                      url_handler=default_url_handler, \
                      payload=default_payload, \
-                     crawl_counter=DEFAULT_CRAWL_MAX):
+                     crawl_counter=DEFAULT_CRAWL_MAX, \
+                     payload_args={}):
 
         self.domain = domain
         self.crawl_queue = CrawlQueue(initial_crawl_urls)
@@ -91,6 +92,8 @@ class Spider(object):
         self.url_handler = url_handler
         self.payload = payload
         self.crawl_counter = crawl_counter
+        self.payload_args = payload_args
+        self.results = []
 
     def get_next_page_str(self):
         """ 
@@ -101,12 +104,17 @@ class Spider(object):
             return False
 
         if len(self.crawl_queue) > 0:
-            this_url = self.crawl_queue.dequeue()
+            
+            while True:
+                this_url = self.crawl_queue.dequeue()
+                if this_url not in self.do_not_crawl_list:
+                    break
+                else:
+                    print "whats %s doing in do not crawl and crawl queue?" % this_url
         
             if this_url not in self.do_not_crawl_list:
                 self.do_not_crawl_list.add(this_url)
                 self.crawl_counter -= 1
-            
                 page_str = get_page_str(this_url, self.domain)
                 return page_str
             else: #url is in do_not_crawl
@@ -124,9 +132,30 @@ class Spider(object):
         else:
             return None
 
-    def run_payload(self, page_str):
+    def run_payload(self, kwargs):
         """
         runs the payload with correct arguements
         """
+
+        return self.payload(**kwargs)
+
+    def crawl(self):
+        """
+        runs the crawl loop until we cannot go any further. Either because we ran out of our crawl counter, or we run out of the crawl queue.
+        """
         
-        return self.payload(page_str)
+        while self.crawl_counter > 0 and len(self.crawl_queue) > 0:
+            # load next page
+            page_str = self.get_next_page_str()
+
+            # get the links
+            urls = all_links(page_str)
+            
+            # handle the links and run payload
+            self.handle_urls(urls)
+            
+            self.payload_args.update({'page_str': page_str})
+            result = self.run_payload(self.payload_args)
+            if result: self.results.append(result)
+            
+        return self.results
