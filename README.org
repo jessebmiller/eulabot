@@ -1,0 +1,11 @@
+* EULAbot
+  I am writing EULAbot with the intention of gathering a large number of EULAs for analysis. It should, however, be simple and modular enough to be adapted easily for general use. 
+
+** Some Definitions
+   EULAbot has some specific meanings for a few fairly generic terms and this documentation will use the EULAbot specific meaning unless otherwise noted.
+
+*** payload 
+    a function that will be called for every page EULAbot crawls. EULAbot will call the payload function and pass the page text in as the first arguement. It is the job of the payload function to do whatever the Spider is there to do (look for EULAs, archive the whole page, ...)
+             
+*** Spider 
+    One of the basic building blocks of EULAbot. A Spider is the object that maintains the crawl queue, handels the urls on each page and runs the payload on each page. A Spider is restricted to one domain, is responsible for respecting that domain's robots.txt and respecting that domain's resources by following a reasonable timeout schedule.
