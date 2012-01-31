@@ -10,3 +10,5 @@
 *** Spider 
     One of the basic building blocks of EULAbot. A Spider is the object that maintains the crawl queue, handles the URLs on each page and runs the payload on each page. A Spider is restricted to one domain, is responsible for respecting that domain's robots.txt and respecting that domain's resources by following a reasonable timeout schedule.
 
+** Testing
+   The tests are written specifically to be run with the crawlThis test site. At the time of writing I have not added this to the project. I may add that soon. Probably should.
