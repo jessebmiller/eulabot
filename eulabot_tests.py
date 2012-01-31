@@ -5,10 +5,9 @@ import re
 
 def test_payload(page_str):
     """ 
-    eventually we will need to use a database record to ensure this is running 
-
-    for now we will just manually check that this thing printed
+    confirms that the function ran by returning 'ran_test_payload'
     """
+    
     return 'ran_test_payload'
 
 def test_url_handler(urls, do_not_crawl_list, crawl_queue):
