@@ -98,6 +98,11 @@ class Spider(object):
     def get_next_page_str(self):
         """ 
         returns the page string of the next url in the crawl queue
+
+        @TODO: This should probably not be doing as much of this here. 
+
+        there might be a use for a get_page_str method
+        but the crawl() method should be figuring out which url is next and should be in charge of the crawl queue
         """
         
         if self.crawl_counter < 1:
