@@ -75,12 +75,16 @@ class Spider(object):
     they are not allowed to access 
 
     a DB or dict external to the spider class seems appropriate
+
+    @TODO: add update_payload(payload, payload_args)
+
+    @TODO: make it work with https or http
     """
     
     def __init__(self, \
                      domain, \
-                     initial_crawl_urls, \
-                     initial_no_crawl_urls, \
+                     initial_crawl_urls=[], \
+                     initial_no_crawl_urls=[], \
                      url_handler=default_url_handler, \
                      payload=default_payload, \
                      crawl_counter=DEFAULT_CRAWL_MAX, \
@@ -115,15 +119,15 @@ class Spider(object):
                 if this_url not in self.do_not_crawl_list:
                     break
                 else:
-                    print "whats %s doing in do not crawl and crawl queue?" % this_url
+                    print "what is %s doing in do not crawl and crawl queue?" % this_url
         
             if this_url not in self.do_not_crawl_list:
                 self.do_not_crawl_list.add(this_url)
                 self.crawl_counter -= 1
                 page_str = get_page_str(this_url, self.domain)
                 return page_str
-            else: #url is in do_not_crawl
-                return False
+            else: 
+                 return False
         else: 
             self.crawl_counter = 0
             
@@ -157,7 +161,9 @@ class Spider(object):
             urls = all_links(page_str)
             
             # handle the links and run payload
-            self.handle_urls(urls)
+            relative_urls = [url.replace('http://%s/' % self.domain, '', 1) for url in urls]
+            relative_urls = [url.replace('https://%s/' % self.domain, '', 1) for url in relative_urls]
+            self.handle_urls(relative_urls)
             
             self.payload_args.update({'page_str': page_str})
             result = self.run_payload(self.payload_args)
