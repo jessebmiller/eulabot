@@ -1,34 +1,9 @@
-import urllib
+from eulabot_helper_functions import *
+from dev_helpers import *
 import re
 
+
 DEFAULT_CRAWL_MAX = 10
-
-def default_payload(page_str):
-    if page_str:
-        print "default payload ran for:", page_str[:50], '...'
-    else:
-        print "there was no page string"
-
-def default_url_handler(urls, do_not_crawl_list, crawl_queue):
-    for url in urls:
-        if url not in do_not_crawl_list:
-            crawl_queue.enqueue(url)
-            
-
-def get_page_str(url, domain):
-    """ returns a string containing the resource at url on domain """
-
-    page_str = urllib.urlopen('http://' + domain + '/' + url).read()
-    return page_str
-
-def all_links(page_str):
-    """ returns a list of the links found in the given page string """
-    
-    try: 
-        matches = re.findall(' href=[\'"]([^\'"]+)[\'"]', page_str)
-        return matches
-    except:
-        return None
 
 class CrawlSet(object):
     """ a set of urls """
@@ -105,12 +80,14 @@ class Spider(object):
 
         if len(self.crawl_queue) > 0:
             
-            while True:
+            this_url = ''
+            while this_url in self.do_not_crawl_list or not this_url:
                 this_url = self.crawl_queue.dequeue()
-                if this_url not in self.do_not_crawl_list:
-                    break
-                else:
-                    print "whats %s doing in do not crawl and crawl queue?" % this_url
+                #dev
+                if this_url in self.do_not_crawl_list:
+                    print "what is %s doing in the do not crawl list" % this_url
+                    log('%s was in both crawl and do not crawl lists' % this_url)
+                #enddev
         
             if this_url not in self.do_not_crawl_list:
                 self.do_not_crawl_list.add(this_url)
