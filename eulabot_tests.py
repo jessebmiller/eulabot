@@ -37,7 +37,7 @@ def test_crawl_payload(page_str):
 class TestEulabot(unittest.TestCase):
     
     def setUp(self):
-        self.test_domain = 'localhost:8000'
+        self.test_domain = 'jessebmiller.com:8000'
         self.crawl_counter = 10
         self.crawl_queue = CrawlQueue(['third', 'second', 'first'])
         self.do_not_crawl = DoNotCrawlList()
@@ -48,6 +48,32 @@ class TestEulabot(unittest.TestCase):
                                  test_payload , \
                                  self.crawl_counter )
 
+        
+    def test_absolute_url_same_domain(self):
+        """
+        starts a spider with a starting url that causes the crawlThis site to return Absolute urls of the same Domain
+        ensures we are able to crawl it correctly
+        """
+
+        abs_spider1 = Spider('jessebmiller.com:8000', \
+                            ['test/crawl_test/abs/1'],\
+                            [], \
+                            test_url_handler, \
+                            test_crawl_payload, \
+                            self.crawl_counter )
+
+        abs_spider2 = Spider('jessebmiller.com:8000', \
+                            ['test/crawl_test/abs/1'],\
+                            [], \
+                            test_url_handler, \
+                            test_crawl_payload, \
+                            self.crawl_counter )
+                            
+        abs_results1 = abs_spider1.crawl()
+        abs_results2 = abs_spider2.crawl()
+
+        self.assertEqual(abs_results1, abs_results2)
+        self.assertEqual(len(abs_results1), self.crawl_counter)
 
     def test_crawl(self):
         """
