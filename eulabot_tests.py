@@ -1,4 +1,6 @@
 from eulabotlib import *
+from eulabot_helper_functions import *
+from dev_helpers import *
 import unittest
 import hashlib
 import re
@@ -75,6 +77,8 @@ class TestEulabot(unittest.TestCase):
         """
         makes sure that the crawl loop runs in order and does not break crawl rules
         """
+
+        log('running test_crawl')
         
         crawl_test_spider = Spider(self.test_domain+'/test/crawl_test', \
                                        ['1'], \
@@ -106,6 +110,8 @@ class TestEulabot(unittest.TestCase):
         run test_payload
         """
 
+        log('running test_spider_get_next_page_str')
+        
         self.assertEqual(self.spider.get_next_page_str(), 'pass')
         self.assertEqual(len(self.spider.crawl_queue), 2)
         self.assertTrue('test/get_page/' in self.spider.do_not_crawl_list)
@@ -141,6 +147,8 @@ class TestEulabot(unittest.TestCase):
         contains a url handler (logic that decides which urls go in the do not crawl list/queue)
         """
 
+        log('running test_spider_init')
+
         self.assertEqual(type(self.spider.crawl_queue), type(CrawlQueue())) 
         self.assertEqual(type(self.spider.do_not_crawl_list), type(DoNotCrawlList())) 
         self.assertEqual(type(self.spider.url_handler), type(test_payload)) 
@@ -148,14 +156,23 @@ class TestEulabot(unittest.TestCase):
         self.assertTrue(self.spider.crawl_counter > 0)
 
     def test_do_not_crawl_add(self):
+
+        log('test_do_not_crawl_add')
+
         self.do_not_crawl.add('dont crawl me')
         self.assertTrue('dont crawl me' in self.do_not_crawl)
 
     def test_crawl_queue_enqueue(self):
+        
+        log('running test_crawl_queue_enqueue')
+
         self.crawl_queue.enqueue('queued')
         self.assertTrue( 'queued' in self.crawl_queue )
 
-    def test_ger_crawl_queue_dequeue(self):
+    def test_crawl_queue_dequeue(self):
+        
+        log('running test_crawl_queue_dequeue')
+
         self.crawl_queue.enqueue('fourth')
         self.assertEqual( self.crawl_queue.dequeue(), 'first' )
         self.assertEqual( self.crawl_queue.dequeue(), 'second' )
@@ -163,12 +180,17 @@ class TestEulabot(unittest.TestCase):
         self.assertEqual( self.crawl_queue.dequeue(), 'fourth' )
 
     def test_crawl_set_length(self):
+
+        log('running test_crawl_set_length')
+        
         length_test_crawl_set = CrawlSet(['one', 'two', 'three'])
         self.assertEqual(len(length_test_crawl_set), 3)
         
 
     def test_crawl_set___contains__(self):
         """ ensures that the CrawlSet __contains__ function is working correctly """
+
+        log('running test_crawl_set___contains__')
 
         c_test_crawl_set = CrawlSet(['one', 'two', 'three'])
         self.assertTrue('one' in c_test_crawl_set)
@@ -184,6 +206,8 @@ class TestEulabot(unittest.TestCase):
         
         only works when crawling the crawlThis test site
         """
+
+        log('running test_get_page_str')
         
         self.assertEqual('pass', read_page_str('test/get_page/', self.test_domain))
 

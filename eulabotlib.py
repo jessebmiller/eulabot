@@ -1,4 +1,5 @@
-import urllib
+from eulabot_helper_functions import *
+from dev_helpers import *
 import re
 import os 
 from datetime import datetime
@@ -6,7 +7,6 @@ from eulabot_helpers import *
 
 DEFAULT_CRAWL_MAX = 10
 DEFAULT_LOG_FILENAME = os.path.abspath('default_crawl.log')
-
 
 class CrawlSet(object):
     """ a set of urls """
