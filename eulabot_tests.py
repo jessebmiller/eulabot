@@ -110,7 +110,7 @@ class TestEulabot(unittest.TestCase):
         self.assertEqual(len(self.spider.crawl_queue), 2)
         self.assertTrue('test/get_page/' in self.spider.do_not_crawl_list)
 
-        random_page_str = get_page_str('randopage', self.test_domain)
+        random_page_str = read_page_str('randopage', self.test_domain)
         urls = all_links(random_page_str)
         self.spider.handle_urls(urls)
         self.assertTrue('test_no_crawl_url' in self.spider.do_not_crawl_list)
@@ -178,14 +178,14 @@ class TestEulabot(unittest.TestCase):
         self.assertFalse('one' not in c_test_crawl_set)
         self.assertFalse('not there' in c_test_crawl_set)
 
-    def test_get_page_str(self):
+    def test_read_page_str(self):
         """ 
         asserts that the get_page_url function actually retrieves the HTML from a url 
         
         only works when crawling the crawlThis test site
         """
         
-        self.assertEqual('pass', get_page_str('test/get_page/', self.test_domain))
+        self.assertEqual('pass', read_page_str('test/get_page/', self.test_domain))
 
     def test_all_links(self):
         """ 
@@ -196,7 +196,7 @@ class TestEulabot(unittest.TestCase):
         asserts that all the links returned by all_links are in the page's HTML
         """
         
-        page_string = get_page_str('any-page-on-crawlThis', self.test_domain)
+        page_string = read_page_str('any-page-on-crawlThis', self.test_domain)
         links = all_links(page_string)
 
         match = re.search('this page has (?P<num>\d+) links', page_string) 
